@@ -112,7 +112,7 @@
 
 	<div class="flex-1 flex overflow-hidden">
 		<div class="w-64 border-r border-zinc-200 flex flex-col max-h-full">
-			<div bind:this={slide_container} class="flex-1 overflow-y-auto p-4 space-y-8">
+			<div class="flex-1 overflow-y-auto p-4 space-y-8">
 				{#each quiz.slides as slide, idx (idx)}
 					<div bind:this={slide_elements[idx]}>
 						<div class="capitalize flex gap-2 text-sm font-semibold text-zinc-600">
