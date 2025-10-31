@@ -1,4 +1,5 @@
 import { D1Database } from '@cloudflare/workers-types';
+import 'unplugin-icons/types/svelte';
 
 // See https://svelte.dev/docs/kit/types#app.d.ts
 // for information about these interfaces
@@ -10,7 +11,7 @@ declare global {
 		// interface PageState {}
 		interface Platform {
 			env: {
-				YOUR_KV_NAMESPACE: D1Database;
+				QUIZBE: D1Database;
 			};
 		}
 	}

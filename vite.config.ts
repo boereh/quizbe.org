@@ -8,6 +8,7 @@ import {
 	transformerDirectives,
 	transformerVariantGroup
 } from 'unocss';
+import unicons from 'unplugin-icons/vite';
 
 export default defineConfig({
 	plugins: [
@@ -39,11 +40,14 @@ export default defineConfig({
 				}),
 				presetWebFonts({
 					fonts: {
-						sans: 'Poppins'
+						sans: 'Poppins:400,700,900'
 					}
 				})
 			],
 			transformers: [transformerCompileClass(), transformerDirectives(), transformerVariantGroup()]
+		}),
+		unicons({
+			compiler: 'svelte'
 		})
 	]
 });

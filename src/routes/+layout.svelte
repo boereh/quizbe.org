@@ -6,6 +6,7 @@
 </script>
 
 <svelte:head>
+	<title>Quizbe - Interactive learning in one space</title>
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
