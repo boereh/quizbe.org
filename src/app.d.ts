@@ -1,4 +1,5 @@
 import { D1Database } from '@cloudflare/workers-types';
+import { type MathfieldElementAttributes } from 'mathlive';
 import 'unplugin-icons/types/svelte';
 
 // See https://svelte.dev/docs/kit/types#app.d.ts
@@ -14,7 +15,17 @@ declare global {
 				QUIZBE: D1Database;
 			};
 		}
+
+		interface IntrinsicElements {
+			'math-field': MathfieldElementAttributes;
+		}
 	}
 }
+
+// declare namespace svelteHTML {
+// 	interface IntrinsicElements {
+// 		'math-field': MathfieldElementAttributes;
+// 	}
+// }
 
 export {};
