@@ -1,5 +1,6 @@
 <script lang="ts">
 	import favicon from '$lib/assets/favicon.svg';
+	import { Tooltip } from 'bits-ui';
 	import 'virtual:uno.css';
 
 	let { children } = $props();
@@ -10,4 +11,6 @@
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
-{@render children()}
+<Tooltip.Provider>
+	{@render children()}
+</Tooltip.Provider>

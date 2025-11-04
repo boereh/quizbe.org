@@ -6,7 +6,7 @@ import {
 	presetWind4,
 	transformerCompileClass,
 	transformerDirectives,
-	transformerVariantGroup
+	transformerVariantGroup,
 } from 'unocss';
 import unicons from 'unplugin-icons/vite';
 
@@ -28,26 +28,26 @@ export default defineConfig({
 						700: '#8F2300',
 						800: '#571500',
 						900: '#1F0700',
-						950: '#030100'
-					}
-				}
+						950: '#030100',
+					},
+				},
 			},
 			presets: [
 				presetWind4({
 					preflights: {
-						reset: true
-					}
+						reset: true,
+					},
 				}),
 				presetWebFonts({
 					fonts: {
-						sans: 'Poppins:400,700,900'
-					}
-				})
+						sans: 'Poppins:400,500,700,900',
+					},
+				}),
 			],
-			transformers: [transformerCompileClass(), transformerDirectives(), transformerVariantGroup()]
+			transformers: [transformerCompileClass(), transformerDirectives(), transformerVariantGroup()],
 		}),
 		unicons({
-			compiler: 'svelte'
-		})
-	]
+			compiler: 'svelte',
+		}),
+	],
 });
