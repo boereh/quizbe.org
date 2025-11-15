@@ -12,5 +12,5 @@
 </svelte:head>
 
 <Tooltip.Provider>
-	{@render children()}
+	{@render children?.()}
 </Tooltip.Provider>

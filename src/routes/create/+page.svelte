@@ -1,300 +1,286 @@
-<script lang="ts">
-	import Plus from '~icons/ph/plus';
-	import ListBullets from '~icons/ph/list-bullets';
-	import GridNine from '~icons/ph/grid-nine-fill';
-	import FlagCheckered from '~icons/ph/flag-checkered-fill';
-	import ArrowElbowDownLeft from '~icons/ph/arrow-elbow-down-left-fill';
-	import FloppyDisk from '~icons/ph/floppy-disk-fill';
+<script module lang="ts">
+	import GridNine from '~icons/ph/dots-six-vertical';
+	import Copy from '~icons/ph/copy';
 	import Trash from '~icons/ph/trash';
-	import Dots6Vertical from '~icons/ph/dots-six-vertical-bold';
-	import Image from '~icons/ph/image';
-	import MaskHappy from '~icons/ph/mask-happy';
-	import FilmStrip from '~icons/ph/film-strip';
-	import SpeakerHigh from '~icons/ph/speaker-high';
-	import { onMount, tick, type Component } from 'svelte';
-	import Trivia from './trivia.svelte';
-	import Jeopardy from './jeopardy.svelte';
+	import ArrowElbowDownLeft from '~icons/ph/arrow-elbow-down-left-fill';
+	import { getContext, onMount, setContext } from 'svelte';
 	import Button from '$lib/components/button.svelte';
+	import { nanoid } from 'nanoid';
 	import { on } from 'svelte/events';
+	import { flip } from 'svelte/animate';
 
-	const MODES: Record<Mode, Component> = {
-		terms: ListBullets,
-		trivia: FlagCheckered,
-		jeopardy: GridNine,
-	};
+	export type BaseQuestion = { points: number; time: number };
 
-	type Mode = 'terms' | 'trivia' | 'jeopardy';
-
-	type Slide = {
+	export type MultipleChoice = {
+		type: 'multiple';
+		points: number;
 		time: number;
-		select: 'single' | 'multiple';
-		points: false | 'standard' | 'double';
-		type: 'quiz' | 'true-false';
-		correct_answers: number[];
-		exclude_answers: string[];
+		text: string;
+		image?: string;
+		answers: Array<{ text?: string; image?: string; correct?: boolean }>;
 	};
 
-	type Trivia = {
-		background: string;
-		slides: Slide[];
+	export type Type = {
+		type: 'type';
+		points: number;
+		time: number;
+		answer: string;
 	};
 
-	type Jeopardy = Record<string, []>;
-
-	type Term = {
-		term: string;
-		term_media?: string;
-		def?: string;
-		def_media?: string;
+	export type Math = {
+		type: 'math';
+		points: number;
+		time: number;
+		text: string;
+		image?: string;
+		answer: string;
 	};
 
-	type Vocabulary = {
-		terms: Term[];
-		trivia: Trivia;
-		jeopardy: Jeopardy;
+	export type DragDrop = {
+		type: 'dnd';
+		points: number;
+		time: number;
+		image?: string;
+		text: Array<{ text: string; correct?: boolean }[]>;
+	};
+
+	export type Categorize = {
+		type: 'categorize';
+		points: number;
+		time: number;
+		answers: Array<{ text?: string; image?: string; category: string }>;
+	};
+
+	export type Match = {
+		type: 'match';
+		points: number;
+		time: number;
+		text?: string;
+		inorder: boolean;
+		cards: Array<{ text: string; text_img: string; answer: string; answer_img: string }>;
+	};
+
+	export type TextOpenEnded = {
+		type: 'draw' | 'audio';
+		text: string;
+	};
+
+	export type Poll = {
+		type: 'poll';
+		text: string;
+		choices: Array<{ text: string; image?: string }>;
+	};
+
+	export type Question = BaseQuestion &
+		(MultipleChoice | Type | Math | DragDrop | Categorize | Match | TextOpenEnded | Poll);
+
+	export type Quiz = {
+		questions: Question[];
 		title: string;
+		id: string;
 		created: Date;
 		updated: Date;
 	};
 
-	let vocabulary = $state<Vocabulary>({
-		terms: [
+	export const useQuiz = () => getContext<Quiz>('quiz');
+</script>
+
+<script lang="ts">
+	let quiz = $state<Quiz>({
+		created: new Date(),
+		id: nanoid(),
+		questions: [
 			{
-				term: 'Right angle',
-				def: 'An angle that measures exactly 90 degrees.',
+				type: 'multiple',
+				text: 'An exact location or position represented by a dot and named with a capital letter.',
+				points: 1,
+				time: 30,
+				answers: [
+					{ text: 'Point', correct: true },
+					{ text: 'Line Segment' },
+					{ text: 'Ray' },
+					{ text: 'Line' },
+				],
 			},
 			{
-				term: 'Point',
-				def: 'An exact location or position represented by a dot and named with a capital letter.',
+				type: 'multiple',
+				text: 'Straight line that goes on forever in both directions.',
+				points: 1,
+				time: 30,
+				answers: [
+					{ text: 'Point' },
+					{ text: 'Line Segment' },
+					{ text: 'Ray' },
+					{ text: 'Line', correct: true },
+				],
 			},
 			{
-				term: 'Line',
-				def: 'Straight line that goes on forever in both directions.',
+				type: 'multiple',
+				text: 'Formed when two rays share the same endpoint.',
+				points: 1,
+				time: 30,
+				answers: [
+					{ text: 'Point' },
+					{ text: 'Line Segment' },
+					{ text: 'Ray' },
+					{ text: 'angle', correct: true },
+				],
 			},
 			{
-				term: 'Angle',
-				def: 'Formed when two rays share the same endpoint.',
+				type: 'multiple',
+				text: 'What type of angle measures exactly 90 degrees?',
+				points: 1,
+				time: 30,
+				answers: [
+					{ text: 'Acute' },
+					{ text: 'Obtuse' },
+					{ text: 'Straight' },
+					{ text: 'Right', correct: true },
+				],
 			},
 		],
-		trivia: {
-			background: 'oklch(96.7% 0.001 286.375)',
-			slides: [],
-		},
-		jeopardy: {},
 		title: '',
-		created: new Date(),
 		updated: new Date(),
 	});
-	let current_mode = $state<Mode>('terms');
-	let dragging_term = $state(-1);
-	let mouse_pos = $state(0);
-	let drag_start = $state(0);
-	let vocab_containers = $state<HTMLDivElement[]>([]);
-	let vocab_contents = $state<HTMLDivElement[]>([]);
-	let vocab_pos_size = $state<{ y: number; h: number }[]>([]);
-	let offset = $state<number>(0);
-	let gap = $state(0);
+	let containers = $state<HTMLDivElement[]>([]);
+	let contents = $state<HTMLDivElement[]>([]);
+	let dragging = $state(-1);
+	let ignore = $state(-1);
+	let mouse = $state(0);
+	let start = $state(0);
+	const animating = $state<Set<number>>(new Set());
 
-	const resolveOffset = $derived((idx: number) => {
-		if (dragging_term < 0) return 0;
-		if (dragging_term === idx) return mouse_pos - drag_start;
-		if (offset === 0) return 0;
-		if (offset > 0 && idx > 0 && offset + dragging_term >= idx)
-			return vocab_pos_size[idx - 1].y - vocab_pos_size[idx].y;
-		if (offset) return 0;
-	});
+	setContext('quiz', quiz);
 
-	onMount(() => {
-		on(window, 'mouseup', async () => {
-			if (offset > 0) {
-				vocabulary.terms.splice(dragging_term + offset + 1, 0, vocabulary.terms[dragging_term]);
-				vocabulary.terms.splice(dragging_term, 1);
-			}
-			await tick();
-			dragging_term = -1;
-		});
+	onMount(() => on(window, 'mouseup', () => (dragging = -1)));
+	onMount(() => on(window, 'mousemove', ({ y }) => (mouse = y)));
 
-		on(window, 'mousemove', ({ y }) => {
-			mouse_pos = y;
+	$effect(() => {
+		if (dragging < 0) return;
 
-			if (dragging_term < 0) return;
-			if (vocabulary.terms.length < 2) return;
+		containers.forEach((v, idx) => {
+			const bounding = v.getBoundingClientRect();
+			if (mouse < bounding.top || mouse > bounding.bottom) return;
+			if (ignore === idx || animating.has(idx)) return;
+			animating.add(idx);
+			setTimeout(() => animating.delete(idx), 200);
+			ignore = idx;
 
-			vocab_pos_size.forEach(function (el, i) {
-				if (mouse_pos < el.y) return;
-				if (mouse_pos > el.h + el.y) return;
+			const qa = quiz.questions[dragging];
+			const qb = quiz.questions[idx];
+			quiz.questions[dragging] = qb;
+			quiz.questions[idx] = qa;
 
-				offset = i - dragging_term;
-			});
+			dragging = idx;
+			start = bounding.top;
 		});
 	});
 </script>
 
-<div class="w-vw h-vh flex flex-col">
-	<div class="border-b border-zinc-200 p-4 gap-4 flex items-center">
+<div class="w-vw h-vh flex flex-col bg-zinc-100">
+	<div class="border-b border-zinc-200 bg-white p-4 gap-4 flex items-center z-30">
 		<span class="text-svelte text-3xl font-black w-60">Quizbe</span>
 
-		<div class="flex-1 flex items-center justify-center gap-8">
-			{#each Object.entries(MODES) as [mode, Icon] (mode)}
-				<button
-					class={[
-						'capitalize flex gap-1 items-center cursor-pointer',
-						current_mode === mode ? '' : 'text-zinc-500',
-					]}
-					onclick={() => (current_mode = mode as Mode)}
-				>
-					<Icon />
-
-					<span>
-						{mode}
-					</span>
-				</button>
-			{/each}
-		</div>
+		<div class="flex-1 flex items-center justify-center gap-8"></div>
 
 		<div class="flex gap-4 flex items-center justify-end">
 			<input
 				class="border border-zinc-200 h-10 px-2 rounded outline-0 flex-1"
 				type="text"
-				placeholder="Enter vocabulary title..."
+				placeholder="Enter quiz title..."
 			/>
 
-			<Button icon={ArrowElbowDownLeft} ui={{ base: 'bg-red-500 text-white border-red-600' }}>
+			<Button icon={ArrowElbowDownLeft} ui={{ base: 'bg-red-50 text-red-500 border-red-600' }}>
 				Exit
 			</Button>
 		</div>
 	</div>
 
-	<div class="flex-1 flex overflow-hidden bg-zinc-100">
-		{#if current_mode === 'trivia'}
-			<Trivia />
-		{:else if current_mode === 'jeopardy'}
-			<Jeopardy />
-		{:else}
-			<div class="flex-1 overflow-y-auto p-8">
-				<div class="grid">
-					{#each vocabulary.terms as term, idx (idx)}
-						<div
-							bind:this={vocab_containers[idx]}
-							class={[
-								'max-w-6xl w-full mx-auto h-48 relative group',
-								dragging_term >= 0 ? 'border-svelte' : '',
-							]}
-						>
-							<div class="w-full h-full border border-dashed border-svelte rounded-xl"></div>
+	<div class="flex-1 overflow-y-auto quiz-container p-4">
+		<div class="grid max-w-6xl mx-auto">
+			{#each quiz.questions as question, idx (idx)}
+				<div
+					bind:this={containers[idx]}
+					class={[dragging === idx ? 'z-5' : '']}
+					animate:flip={{ duration: 200 }}
+				>
+					<div
+						bind:this={contents[idx]}
+						class={[
+							'bg-white p-4 rounded border border-zinc-200 relative space-y-4',
+							dragging === idx ? 'z-5' : 'transition-all transition',
+						]}
+						style:translate="0 {dragging === idx ? mouse - start : 0}px"
+					>
+						<div class="flex gap-2">
+							<span class="size-4">
+								{idx + 1}
+							</span>
 
-							<div
-								bind:this={vocab_contents[idx]}
-								class={[
-									'absolute bg-white rounded-lg p-4 gap-4 h-full w-full transition-all flex border border-zinc-200 shadow-lg',
-									dragging_term === idx ? 'z-20 duration-0' : '',
-									offset === 0 ? '' : 'duration-0',
-								]}
-								style:top="{resolveOffset(idx)}px"
-							>
-								<div class="flex-1 flex flex-col gap-4">
-									<div class="flex flex-col gap-1 h-10 relative">
-										<span
-											class=" absolute text-xs top-0 -translate-y-1/2 left-2 bg-white px-2 text-zinc-400"
-										>
-											Term
-										</span>
+							<div class="flex-1"></div>
 
-										<input
-											bind:value={vocabulary.terms[idx].term}
-											class="outline-none border border-zinc-200 rounded-md h-10 px-2"
-											type="text"
-											placeholder="Enter vocab term"
-										/>
-									</div>
+							<Button
+								size="xs"
+								icon={GridNine}
+								onmousedown={() => {
+									dragging = idx;
+									start = mouse;
+								}}
+							/>
 
-									<div class="flex flex-1 flex-col relative">
-										<span
-											class=" absolute text-xs top-0 -translate-y-1/2 left-2 bg-white px-2 text-zinc-400"
-										>
-											Definition
-										</span>
+							<Button
+								size="xs"
+								icon={Copy}
+								onclick={() => {
+									quiz.questions.splice(idx + 1, 0, question);
+								}}
+							/>
 
-										<textarea
-											bind:value={vocabulary.terms[idx].def}
-											class="flex-1 w-full outline-none resize-none border border-zinc-200 p-2 px-2 rounded-md"
-											placeholder="Enter vocab definition"
-										></textarea>
-									</div>
-								</div>
-
-								<button
-									class="h-full aspect-square border border-dashed rounded-lg border-zinc-300 flex items-center justify-center flex-wrap p-12 gap-2 cursor-pointer text-zinc-400 hover:(text-zinc-600 border-zinc-500)"
-								>
-									{#each [Image, MaskHappy, FilmStrip, SpeakerHigh] as Icon, idx (idx)}
-										<Icon />
-									{/each}
-								</button>
-
-								<div class="flex flex-col gap-4">
-									<button
-										class="cursor-ns-resize size-8 rounded-md grid place-items-center bg-zinc-50"
-										onmousedown={() => {
-											dragging_term = idx;
-											drag_start = mouse_pos;
-											for (const [i, el] of vocab_contents.entries()) {
-												if (!vocab_pos_size[i]) vocab_pos_size[i] = { h: 0, y: 0 };
-												const rect = el.getBoundingClientRect();
-												vocab_pos_size[i].h = rect.height;
-												vocab_pos_size[i].y = rect.top;
-											}
-											gap = vocab_pos_size[1].y - (vocab_pos_size[0].h + vocab_pos_size[0].y);
-										}}
-									>
-										<Dots6Vertical />
-									</button>
-
-									<Button
-										icon={Trash}
-										size="sm"
-										ui={{
-											base: 'text-white bg-red-500 border-red-700 transition opacity-0 pointer-events-none group-hover:(opacity-100 pointer-events-auto)',
-										}}
-									></Button>
-								</div>
-							</div>
+							<Button
+								size="xs"
+								icon={Trash}
+								ui={{ base: 'border-red-200 text-red-700 bg-red-50' }}
+								onclick={() => {
+									quiz.questions.splice(idx + 1, 0, question);
+								}}
+							/>
 						</div>
 
-						{#if idx < vocabulary.terms.length - 1}
-							<div class="group min-h-8 h-8 relative flex justify-center items-center">
-								<Button
-									size="sm"
-									ui={{
-										base: [
-											dragging_term >= 0
-												? 'pointer-events-none opacity-0'
-												: 'pointer-events-none opacity-0 group-hover:(opacity-100 pointer-events-auto)',
-										],
-									}}
-									icon={Plus}
-									onclick={() => {
-										vocabulary.terms.splice(idx + 1, 0, {
-											term: '',
-										});
-									}}
-								/>
+						<div class="flex gap-8">
+							<div class="flex-1">
+								{question.type === 'multiple' ? question.text : ''}
 							</div>
-						{/if}
-					{/each}
 
-					<div class="grid place-items-center py-8">
-						<Button
-							onclick={() => {
-								vocabulary.terms.push({
-									term: '',
-								});
-							}}
-						>
-							Add a term
-						</Button>
+							{#if question.type === 'multiple'}
+								<div class="grid grid-cols-2 gap-2 flex-1">
+									{#each question.answers as answer, idx (idx)}
+										<Button
+											ui={{
+												base: [answer.correct ? 'border-green-500 bg-green-400 text-white' : ''],
+											}}
+										>
+											{typeof answer === 'string' ? answer : answer.text}
+										</Button>
+									{/each}
+								</div>
+							{/if}
+						</div>
 					</div>
+
+					{#if idx < quiz.questions.length - 1}
+						<div
+							class="hover:(opacity-100) opacity-0 transition duration-600 flex py-1 items-center gap-1"
+						>
+							<span class="flex-1 h-3px rounded-full bg-svelte"></span>
+							<Button size="xs" ui={{ base: 'bg-svelte text-white border-svelte-600' }}>
+								Add question
+							</Button>
+
+							<span class="flex-1 h-3px rounded-full bg-svelte"></span>
+						</div>
+					{/if}
 				</div>
-			</div>
-		{/if}
+			{/each}
+		</div>
 	</div>
 </div>

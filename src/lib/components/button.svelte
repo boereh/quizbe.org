@@ -20,7 +20,7 @@
 	const classes = $derived(
 		tv({
 			slots: {
-				base: 'cursor-pointer border bg-white border-zinc-300 flex items-center transition-all justify-center active:(shadow-none border-b-1)',
+				base: 'cursor-pointer border bg-white border-zinc-200 flex items-center transition-all justify-center active:(shadow-none border-b-1)',
 				icon: '',
 			},
 			variants: {
@@ -30,15 +30,15 @@
 						icon: '',
 					},
 					sm: {
-						base: 'gap-2 text-sm px-4 rounded-lg h-8 shadow-md border-b-4 hover:(shadow border-b-2)',
+						base: 'gap-2 text-sm px-4 rounded-lg h-8 shadow-md border-b-5 hover:(shadow border-b-3)',
 						icon: '',
 					},
 					md: {
-						base: 'gap-2 px-4 rounded-lg h-10 shadow-md border-b-4 hover:(shadow border-b-2)',
+						base: 'gap-2 px-4 rounded-lg h-10 shadow-md border-b-5 hover:(shadow border-b-3)',
 						icon: '',
 					},
 					lg: {
-						base: 'gap-4 px-4 rounded-xl h-12 shadow-xl border-b-6 hover:(shadow border-b-3)',
+						base: 'gap-4 px-4 rounded-xl h-12 shadow-xl border-b-7 hover:(shadow border-b-4)',
 						icon: '',
 					},
 					xl: {
