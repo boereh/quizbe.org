@@ -8,6 +8,7 @@
 	import { nanoid } from 'nanoid';
 	import { on } from 'svelte/events';
 	import { flip } from 'svelte/animate';
+	import { GridStack } from 'gridstack';
 
 	export type BaseQuestion = { points: number; time: number };
 
@@ -149,6 +150,7 @@
 	let mouse = $state(0);
 	let start = $state(0);
 	const animating = $state<Set<number>>(new Set());
+	let gs: GridStack;
 
 	setContext('quiz', quiz);
 
@@ -173,6 +175,13 @@
 
 			dragging = idx;
 			start = bounding.top;
+		});
+	});
+
+	onMount(() => {
+		gs = GridStack.init({
+			column: 1,
+			handle: '.handle',
 		});
 	});
 </script>

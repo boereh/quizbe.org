@@ -9,6 +9,7 @@ import {
 	transformerVariantGroup,
 } from 'unocss';
 import unicons from 'unplugin-icons/vite';
+import presetAnimations from 'unocss-preset-animations';
 
 export default defineConfig({
 	plugins: [
@@ -43,8 +44,19 @@ export default defineConfig({
 						sans: 'Poppins:400,500,700,900',
 					},
 				}),
+				presetAnimations(),
 			],
 			transformers: [transformerCompileClass(), transformerDirectives(), transformerVariantGroup()],
+			content: {
+				pipeline: {
+					include: [
+						// the default
+						/\.(vue|svelte|[jt]sx|mdx?|astro|elm|php|phtml|html)($|\?)/,
+						// include js/ts files
+						'(components|src)/**/*.{js,ts}',
+					],
+				},
+			},
 		}),
 		unicons({
 			compiler: 'svelte',

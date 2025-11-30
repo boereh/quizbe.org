@@ -1,5 +1,4 @@
 <script lang="ts">
-	import favicon from '$lib/assets/favicon.svg';
 	import { Tooltip } from 'bits-ui';
 	import 'virtual:uno.css';
 
@@ -8,7 +7,6 @@
 
 <svelte:head>
 	<title>Quizbe - Interactive learning in one space</title>
-	<link rel="icon" href={favicon} />
 </svelte:head>
 
 <Tooltip.Provider>
