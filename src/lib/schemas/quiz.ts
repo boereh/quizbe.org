@@ -11,14 +11,18 @@ import {
 	type InferInput,
 } from 'valibot';
 
+export const QUESTION_TYPES: Record<Question[0]['type'], string> = {
+	multiple: 'Multiple Choice',
+};
+
 export const QUESTION_MULTIPLE = object({
 	type: literal('multiple'),
 	text: string(),
-	image: string(),
+	media: string(),
 	answers: array(
 		object({
 			text: string(),
-			image: string(),
+			media: string(),
 			correct: boolean(),
 		}),
 	),
@@ -39,6 +43,7 @@ export const QUIZ_SCHEMA = object({
 	created: date(),
 	updated: date(),
 	questions: array(QUESTION_SCHEMA),
+	local: boolean(),
 });
 
 export type Quiz = InferInput<typeof QUIZ_SCHEMA>;

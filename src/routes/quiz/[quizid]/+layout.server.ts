@@ -3,7 +3,6 @@ import type { Quiz } from '$lib/schemas/quiz';
 export async function load({ parent, params: { quizid } }) {
 	await parent();
 
-	if (quizid === 'example') return { quiz: EXAMPLE_QUIZ };
 	return {};
 }
 
@@ -13,6 +12,7 @@ const EXAMPLE_QUIZ: Quiz = {
 	authors: [],
 	created: new Date(),
 	updated: new Date(),
+	local: true,
 	questions: [
 		{
 			type: 'multiple',
