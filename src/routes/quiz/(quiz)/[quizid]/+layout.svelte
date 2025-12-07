@@ -19,7 +19,7 @@
 	onMount(async () => {
 		if (quiz.value) return;
 		if (!page.params.quizid) return goto(resolve('/quiz'));
-		const result = await get(page.params.quizid, createStore('quizbe', 'quizes'));
+		const result = await get(page.params.quizid, createStore('quizbe', 'quizzes'));
 		const parsed = safeParse(QUIZ_SCHEMA, result);
 		if (!parsed.success) return goto(resolve('/quiz'));
 		quiz.value = parsed.output;
@@ -31,7 +31,7 @@
 		const quiz_snapped = $state.snapshot(quiz).value;
 
 		if (quiz_snapped.local) {
-			return set(quiz.value.id, quiz_snapped, createStore('quizbe', 'quizes'));
+			return set(quiz.value.id, quiz_snapped, createStore('quizbe', 'quizzes'));
 		}
 	}, 500);
 

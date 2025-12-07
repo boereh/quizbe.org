@@ -1,7 +1,6 @@
 import {
 	array,
 	boolean,
-	date,
 	intersect,
 	literal,
 	number,
@@ -40,8 +39,8 @@ export const QUIZ_SCHEMA = object({
 	id: string(),
 	title: string(),
 	authors: array(string()),
-	created: date(),
-	updated: date(),
+	created: number(),
+	updated: number(),
 	questions: array(QUESTION_SCHEMA),
 	local: boolean(),
 });
