@@ -1,4 +1,4 @@
-import { getContext } from 'svelte';
+import { createContext } from 'svelte';
 import type { Quiz } from './schemas/quiz';
 
-export const useQuiz = () => getContext<{ value: Quiz }>('quiz');
+export const [useQuiz, setQuiz] = createContext<{ value: Quiz | undefined; loading: boolean }>();

@@ -12,6 +12,7 @@
 	import Pen from '~icons/ph/pen';
 	import Calendar from '~icons/ph/calendar-dots';
 	import ArrowsClockwise from '~icons/ph/arrows-clockwise';
+	import List from '~icons/ph/list-numbers';
 	import { useQuizStorage } from '$lib/storage';
 	import { goto } from '$app/navigation';
 	import { onMount, tick } from 'svelte';
@@ -42,7 +43,7 @@
 			updated: Date.now(),
 		});
 
-		goto(resolve('/quiz/(quiz)/[quizid]/edit', { quizid: id }));
+		goto(resolve('/quiz/[quizid]/edit', { quizid: id }));
 	}
 
 	onMount(async () => {
@@ -78,6 +79,11 @@
 		{ lazy: true },
 	);
 </script>
+
+<div class="bg-white border-b border-zinc-200 sticky top-0 p-2 flex items-center gap-2">
+	<span class="font-bold text-svelte text-2xl"> Quizbe </span>
+	<span class="flex-1"></span>
+</div>
 
 <div class="p-4">
 	<div class="max-w-7xl mx-auto space-y-4">
@@ -122,7 +128,7 @@
 				</Button>
 			</div>
 		{:else}
-			<div class="max-w-7xl gap-4 grid grid-cols-3">
+			<div class="max-w-7xl gap-4 grid md:grid-cols-2 xl:grid-cols-3">
 				{#each quizzes as quiz, idx (idx)}
 					<div class="max-w-7xl bg-white p-4 rounded-xl border border-zinc-200 flex flex-col gap-4">
 						<div class="flex gap-2">
@@ -132,7 +138,7 @@
 								size="sm"
 								icon={Pen}
 								label="Edit"
-								onclick={() => goto(resolve('/quiz/(quiz)/[quizid]/edit', { quizid: quiz.id }))}
+								onclick={() => goto(resolve('/quiz/[quizid]/edit', { quizid: quiz.id }))}
 							/>
 
 							<Button
@@ -161,11 +167,21 @@
 							{quiz.title}
 						</h1>
 
-						<div class="flex gap-4 justify-between items-center text-sm">
+						<div class="flex gap-4 justify-between items-center text-sm text-zinc-600">
+							<span class="flex gap-2 items-center" title="Amount of Questions">
+								<List class="size-4" />
+
+								<span class="font-medium">
+									{quiz.questions.length} questions
+								</span>
+							</span>
+						</div>
+
+						<div class="flex gap-4 justify-between items-center text-sm text-zinc-600">
 							<span class="flex gap-2 items-center" title="Updated">
 								<Calendar class="size-4" />
 
-								<span class="text-zinc-500 font-medium">
+								<span class="font-medium">
 									{dayjs(quiz.updated).fromNow()}
 								</span>
 							</span>
@@ -173,7 +189,7 @@
 							<span class="flex gap-2 items-center" title="Created">
 								<ArrowsClockwise class="size-4" />
 
-								<span class="text-zinc-500 font-medium">
+								<span class="font-medium">
 									{dayjs(quiz.created).fromNow()}
 								</span>
 							</span>
@@ -184,3 +200,9 @@
 		{/if}
 	</div>
 </div>
+
+<style>
+	:global(body) {
+		--at-apply: bg-zinc-100;
+	}
+</style>
