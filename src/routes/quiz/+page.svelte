@@ -80,11 +80,6 @@
 	);
 </script>
 
-<div class="bg-white border-b border-zinc-200 sticky top-0 p-2 flex items-center gap-2">
-	<span class="font-bold text-svelte text-2xl"> Quizbe </span>
-	<span class="flex-1"></span>
-</div>
-
 <div class="p-4">
 	<div class="max-w-7xl mx-auto space-y-4">
 		<!-- <div class="flex gap-4"> -->

@@ -4,15 +4,20 @@
 	import Trash from '~icons/ph/trash';
 	import Pen from '~icons/ph/pen';
 	import Copy from '~icons/ph/copy';
+	import X from '~icons/ph/x';
+	import Check from '~icons/ph/check';
 	import DotsSixVertical from '~icons/ph/dots-six-vertical';
 	import Button from '$lib/components/button.svelte';
 	import { Dialog } from 'bits-ui';
 	import { useQuiz } from '$lib/contexts';
 	import { fade } from 'svelte/transition';
 	import {
+		BLANK_QUESTIONS,
+		ICONS_OF_QUESTION_TYPES,
 		TIMELIMIT_KEYS_QUESTION,
 		TIMELIMIT_QUESTION,
 		TYPE_OF_QUESTIONS,
+		type Question,
 	} from '$lib/schemas/quiz';
 	import Editor from './editor.svelte';
 	import NoQuestions from './no-questions.svelte';
@@ -60,6 +65,23 @@
 		{@const question = quiz.value?.questions[editing]}
 		{#if question}
 			<Button size="sm" icon={ArrowElbowDownLeft} onclick={() => (editing = -1)} />
+
+			<SelectSingle
+				size="sm"
+				bind:value={
+					() => question.type,
+					(v) => {
+						if (!quiz.value?.questions[editing]) return;
+						quiz.value.questions[editing] = BLANK_QUESTIONS[v];
+					}
+				}
+				items={Object.keys(TYPE_OF_QUESTIONS).map((v) => ({
+					label: TYPE_OF_QUESTIONS[v as Question['type']],
+					value: v,
+					icon: ICONS_OF_QUESTION_TYPES[v as Question['type']],
+				}))}
+				icon={ICONS_OF_QUESTION_TYPES[question.type]}
+			/>
 
 			<span class="flex-1"></span>
 
@@ -143,7 +165,11 @@
 
 					<span class="flex-1"></span>
 
-					<Button size="xs" icon={Copy} />
+					<Button
+						size="xs"
+						icon={Copy}
+						onclick={() => quiz.value?.questions.splice(idx + 1, 0, question)}
+					/>
 					<Button size="xs" icon={Pen} label="Edit" onclick={() => (editing = idx)} />
 					<Button
 						size="xs"
@@ -154,12 +180,30 @@
 				</div>
 
 				{#if question.type === 'multiple'}
-					<div class="flex">
+					<div class="flex gap-4">
 						<div class="flex-1 flex flex-col gap-4">
 							{question.text}
 						</div>
 
-						<div class="flex-1 grid grid-cols-2"></div>
+						<div class="flex-1 grid grid-cols-2 gap-4">
+							{#each question.answers as answer, idx (idx)}
+								<div class="flex gap-2 items-center">
+									{#if answer.correct}
+										<Check class="text-green" />
+									{:else}
+										<X class="text-red" />
+									{/if}
+
+									{#if answer.media}
+										<img src={answer.media} alt="answer's media" />
+									{/if}
+
+									<span>
+										{answer.text}
+									</span>
+								</div>
+							{/each}
+						</div>
 					</div>
 				{/if}
 			</div>

@@ -55,8 +55,16 @@ export const BLANK_QUESTIONS: QuestionsRecord = {
 		],
 	},
 	categorize: { type: 'categorize', points: 1, time: 30, text: '', categories: [] },
-	drag: { type: 'drag', points: 1, time: 30, text: '', media: '', answers: [] },
-	dropdown: { type: 'dropdown', points: 1, time: 30, text: '', media: '', answers: '' },
+	drag: { type: 'drag', points: 1, time: 30, text: '', media: '', answers: [], nonanswers: [] },
+	dropdown: {
+		type: 'dropdown',
+		points: 1,
+		time: 30,
+		text: '',
+		media: '',
+		answers: [],
+		nonanswers: [],
+	},
 	match: { type: 'match', points: 1, time: 30, text: '', answers: [] },
 	plot: { type: 'plot', points: 1, time: 30, text: '', answers: [] },
 	type: { type: 'type', points: 1, time: 30, text: '', media: '', answer: '' },
@@ -145,7 +153,8 @@ export const QUESTION_DROPDOWN = object({
 	type: literal('dropdown'),
 	text: string(),
 	media: string(),
-	answers: string(),
+	answers: array(string()),
+	nonanswers: array(string()),
 });
 
 export const QUESTION_DRAG = object({
@@ -153,6 +162,7 @@ export const QUESTION_DRAG = object({
 	text: string(),
 	media: string(),
 	answers: array(string()),
+	nonanswers: array(string()),
 });
 
 export const QUESTION_TYPE = object({

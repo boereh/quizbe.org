@@ -42,7 +42,6 @@
 	watch(
 		() => editing,
 		(v) => {
-			console.log('what', v);
 			if (v >= 0) return;
 
 			answers_media_element.forEach((e) => {
