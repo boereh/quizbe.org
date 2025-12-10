@@ -3,11 +3,13 @@
 	import { useQuiz } from '$lib/contexts';
 	import Trash from '~icons/ph/trash';
 	import FilePlus from '~icons/ph/file-plus';
+	import X from '~icons/ph/x';
 	import Plus from '~icons/ph/plus';
 	import Check from '~icons/ph/check';
 	import Play from '~icons/ph/play';
-	import { TextareaAutosize } from 'runed';
-	import type { Question } from '$lib/schemas/quiz';
+	import Stop from '~icons/ph/stop';
+	import { TextareaAutosize, watch } from 'runed';
+	import WaveSurfer from 'wavesurfer.js';
 
 	const ANSWER_COLORS = [
 		'border-red-500', // bg-red-600
@@ -23,9 +25,8 @@
 	let { editing }: Props = $props();
 	const quiz = useQuiz();
 	let editing_text_el = $state<HTMLTextAreaElement>(null!);
-	let answers_media_elements = $state<(HTMLMediaElement | HTMLAudioElement | HTMLImageElement)[]>(
-		[],
-	);
+	let answers_media_element = $state<HTMLMediaElement[]>([]);
+	let answers_media_playing = $state<boolean[]>([]);
 
 	if ('text' in (quiz.value?.questions[editing] || {})) {
 		new TextareaAutosize({
@@ -37,6 +38,20 @@
 			},
 		});
 	}
+
+	watch(
+		() => editing,
+		(v) => {
+			console.log('what', v);
+			if (v >= 0) return;
+
+			answers_media_element.forEach((e) => {
+				e.pause();
+				e.currentTime = 0;
+			});
+			answers_media_playing = answers_media_playing.map(() => false);
+		},
+	);
 </script>
 
 <div
@@ -59,7 +74,9 @@
 					placeholder="Type question here"
 				></textarea>
 
-				<div class="flex-1"></div>
+				<div class="flex-1 grid place-items-center">
+					<Button icon={FilePlus} label="Add media" />
+				</div>
 
 				<div class="flex gap-4 items-center">
 					{#each question.answers as answer, idx (idx)}
@@ -82,65 +99,106 @@
 									onclick={() => question.answers.splice(idx, 1)}
 								/>
 
-								<Button
-									size="xs"
-									icon={FilePlus}
-									onclick={() => {
-										const input = document.createElement('input');
-										input.type = 'file';
-										input.setAttribute('accept', 'image/*,video/*,audio/*');
-										input.addEventListener('change', () => {
-											const file = input.files?.[0];
-											if (!file) return;
-											const reader = new FileReader();
-											reader.onloadend = function () {
-												if (!reader.result) return;
-												console.log(reader.result);
-												answer.media = reader.result.toString();
-											};
-											reader.readAsDataURL(file);
-										});
-										input.click();
-									}}
-								/>
+								{#if !answer.media}
+									<Button
+										size="xs"
+										icon={FilePlus}
+										onclick={() => {
+											const input = document.createElement('input');
+											input.type = 'file';
+											input.setAttribute('accept', 'image/*,video/*,audio/*');
+											input.addEventListener('change', () => {
+												const file = input.files?.[0];
+												if (!file) return;
+												const reader = new FileReader();
+												reader.onloadend = function () {
+													if (!reader.result) return;
+													console.log(reader.result);
+													answer.media = reader.result.toString();
+												};
+												reader.readAsDataURL(file);
+											});
+											input.click();
+										}}
+									/>
+								{/if}
 
 								<span class="flex-1"></span>
 
-								<button
-									class={[
-										'size-6 rounded-full grid place-items-center border cursor-pointer transition-all',
-										answer.correct
-											? 'bg-green-500 text-white border-green-500'
-											: 'bg-zinc-50 border-zinc-200 opacity-0 pointer-events-none hover:bg-zinc-200 group-hover:(opacity-100 pointer-events-auto)',
-									]}
-									onclick={() => (answer.correct = !answer.correct)}
-								>
-									<Check class="size-4" />
-								</button>
+								{#if answer.text.length > 0 || answer.media.length > 0}
+									<button
+										class={[
+											'size-6 rounded-full grid place-items-center border cursor-pointer transition-all',
+											answer.correct
+												? 'bg-green-500 text-white border-green-500'
+												: 'bg-zinc-50 border-zinc-200 opacity-0 pointer-events-none hover:bg-zinc-200 group-hover:(opacity-100 pointer-events-auto)',
+										]}
+										onclick={() => (answer.correct = !answer.correct)}
+									>
+										<Check class="size-4" />
+									</button>
+								{/if}
 							</div>
 
-							{#if answer.media.startsWith('data:image')}
-								<img
-									bind:this={answers_media_elements[idx]}
-									src={answer.media}
-									alt="answer's media"
-								/>
-							{:else if answer.media.startsWith('data:video')}
-								<div class="relative">
-									<video
-										bind:this={answers_media_elements[idx]}
-										src={answer.media}
-										controls
-										onclick={(e) => e.currentTarget.play()}
-									>
-										<track kind="captions" />
-									</video>
+							{#if answer.media}
+								<div class="aspect-video grid place-items-center group relative">
+									{#if answer.media.startsWith('data:image')}
+										<img src={answer.media} alt="answer's media" />
+									{:else if answer.media.startsWith('data:video')}
+										<video
+											bind:this={answers_media_element[idx]}
+											src={answer.media}
+											onended={() => (answers_media_playing[idx] = false)}
+										>
+											<track kind="captions" />
+										</video>
+									{:else if answer.media.startsWith('data:audio')}
+										<div>
+											<audio
+												bind:this={answers_media_element[idx]}
+												src={answer.media}
+												onended={() => (answers_media_playing[idx] = false)}
+											></audio>
+										</div>
+									{/if}
 
-									<button
-										class="size-6 absolute right-1 bottom-1 bg-black/50 text-white text-xs rounded-full grid place-items-center backdrop-blur pointer-events-none"
+									<div
+										class="absolute h-full w-full pointer-events-none bg-linear-to-b from-black/50 via-transparent opacity-0 transition group-hover:(opacity-100)"
 									>
-										<Play />
-									</button>
+										<div class="flex gap-1 p-1 pointer-events-auto">
+											{#if answer.media.startsWith('data:video') || answer.media.startsWith('data:audio')}
+												<button
+													class="size-6 bg-black/50 text-white text-xs rounded-full grid place-items-center backdrop-blur cursor-pointer"
+													onclick={() => {
+														if (!answers_media_playing[idx]) {
+															answers_media_playing[idx] = true;
+
+															return answers_media_element[idx].play();
+														}
+
+														answers_media_playing[idx] = false;
+														answers_media_element[idx].pause();
+														answers_media_element[idx].currentTime = 0;
+													}}
+												>
+													{#if answers_media_playing[idx]}
+														<Stop />
+													{:else}
+														<Play />
+													{/if}
+												</button>
+											{/if}
+
+											<span class="flex-1"></span>
+
+											<button
+												class="size-6 bg-red-500/50 text-white text-xs rounded-full grid place-items-center backdrop-blur cursor-pointer"
+												onclick={() => (answer.media = '')}
+											>
+												<X />
+											</button>
+										</div>
+									</div>
 								</div>
 							{/if}
 

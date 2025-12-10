@@ -9,11 +9,16 @@
 	import { Dialog } from 'bits-ui';
 	import { useQuiz } from '$lib/contexts';
 	import { fade } from 'svelte/transition';
-	import { TYPE_OF_QUESTIONS } from '$lib/schemas/quiz';
+	import {
+		TIMELIMIT_KEYS_QUESTION,
+		TIMELIMIT_QUESTION,
+		TYPE_OF_QUESTIONS,
+	} from '$lib/schemas/quiz';
 	import Editor from './editor.svelte';
 	import NoQuestions from './no-questions.svelte';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
+	import SelectSingle from '$lib/components/select-single.svelte';
 
 	const quiz = useQuiz();
 
@@ -52,9 +57,30 @@
 			}}
 		/>
 	{:else}
-		<Button size="sm" icon={ArrowElbowDownLeft} onclick={() => (editing = -1)} />
+		{@const question = quiz.value?.questions[editing]}
+		{#if question}
+			<Button size="sm" icon={ArrowElbowDownLeft} onclick={() => (editing = -1)} />
 
-		<span class="flex-1"></span>
+			<span class="flex-1"></span>
+
+			<SelectSingle
+				size="sm"
+				bind:value={() => question.points.toString(), (v) => (question.points = parseInt(v))}
+				items={Array.from({ length: 20 }).map((_, i) => ({
+					label: `${i + 1} point${i > 0 ? 's' : ''}`,
+					value: (i + 1).toString(),
+				}))}
+			/>
+
+			<SelectSingle
+				size="sm"
+				bind:value={() => question.time.toString(), (v) => (question.time = parseFloat(v))}
+				items={TIMELIMIT_KEYS_QUESTION.map((t) => ({
+					label: TIMELIMIT_QUESTION[t],
+					value: t.toString(),
+				}))}
+			/>
+		{/if}
 	{/if}
 </div>
 
@@ -96,6 +122,24 @@
 					>
 						{idx + 1}. {TYPE_OF_QUESTIONS[question.type]}
 					</div>
+
+					<SelectSingle
+						size="xs"
+						bind:value={() => question.points.toString(), (v) => (question.points = parseInt(v))}
+						items={Array.from({ length: 20 }).map((_, i) => ({
+							label: `${i + 1} point${i > 0 ? 's' : ''}`,
+							value: (i + 1).toString(),
+						}))}
+					/>
+
+					<SelectSingle
+						size="xs"
+						bind:value={() => question.time.toString(), (v) => (question.time = parseFloat(v))}
+						items={TIMELIMIT_KEYS_QUESTION.map((t) => ({
+							label: TIMELIMIT_QUESTION[t],
+							value: t.toString(),
+						}))}
+					/>
 
 					<span class="flex-1"></span>
 
