@@ -43,7 +43,7 @@
 			updated: Date.now(),
 		});
 
-		goto(resolve('/(edit)/quiz/[quizid]/edit', { quizid: id }));
+		goto(`/quiz/${id}/edit`);
 	}
 
 	onMount(async () => {
@@ -133,7 +133,7 @@
 								size="xs"
 								icon={Pen}
 								label="Edit"
-								onclick={() => goto(resolve('/(edit)/quiz/[quizid]/edit', { quizid: quiz.id }))}
+								onclick={() => goto(`/quiz/${quiz.id}/edit`)}
 							/>
 
 							<Button

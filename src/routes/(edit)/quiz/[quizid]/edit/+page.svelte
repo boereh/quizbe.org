@@ -56,7 +56,7 @@
 
 <div class="sticky top-0 w-full bg-white border-b border-zinc-200 p-2 flex gap-2 items-center z-20">
 	{#if editing < 0}
-		<a class="font-bold text-svelte text-2xl" href={resolve('/(quiz)/quiz', {})}> Quizbe </a>
+		<a class="font-bold text-svelte text-2xl" href="/quiz"> Quizbe </a>
 
 		<span class="w-px h-4 bg-zinc-200"></span>
 
@@ -78,7 +78,7 @@
 			size="sm"
 			label="Exit"
 			icon={ArrowElbowDownLeft}
-			onclick={() => goto(resolve('/(edit)/quiz/[quizid]', { quizid: quiz?.id || '?' }))}
+			onclick={() => goto(`/quiz/${quiz?.id}/edit`)}
 			ui={{
 				base: 'bg-red-50 border-red-100 text-red-500',
 			}}

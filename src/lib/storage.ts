@@ -18,9 +18,9 @@ export const saveQuiz = useDebounce(async (quiz: Quiz) => {
 }, 500);
 
 export async function loadDeviceQuiz(id?: string) {
-	if (!id) return goto(resolve('/quiz'));
+	if (!id) return goto('/quiz');
 	const storage = useQuizStorage();
 	const parsed = safeParse(QUIZ_SCHEMA, await storage.get(id));
-	if (!parsed.success) return goto(resolve('/quiz'));
+	if (!parsed.success) return goto('/quiz');
 	return parsed.output;
 }
