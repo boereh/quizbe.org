@@ -43,7 +43,7 @@
 			updated: Date.now(),
 		});
 
-		goto(resolve('/quiz/[quizid]/edit', { quizid: id }));
+		goto(resolve('/(edit)/quiz/[quizid]/edit', { quizid: id }));
 	}
 
 	onMount(async () => {
@@ -127,17 +127,17 @@
 				{#each quizzes as quiz, idx (idx)}
 					<div class="max-w-7xl bg-white p-4 rounded-xl border border-zinc-200 flex flex-col gap-4">
 						<div class="flex gap-2">
-							<Button size="sm" icon={Rocket} label="Host" />
+							<Button size="xs" icon={Rocket} label="Host" />
 							<span class="flex-1"></span>
 							<Button
-								size="sm"
+								size="xs"
 								icon={Pen}
 								label="Edit"
-								onclick={() => goto(resolve('/quiz/[quizid]/edit', { quizid: quiz.id }))}
+								onclick={() => goto(resolve('/(edit)/quiz/[quizid]/edit', { quizid: quiz.id }))}
 							/>
 
 							<Button
-								size="sm"
+								size="xs"
 								icon={Copy}
 								onclick={() =>
 									quizzes.splice(idx + 1, 0, {
@@ -148,10 +148,10 @@
 									})}
 							/>
 
-							<Button size="sm" icon={Link} />
+							<Button size="xs" icon={Link} />
 
 							<Button
-								size="sm"
+								size="xs"
 								icon={Trash}
 								ui={{ base: 'bg-red-50 border-red-200 text-red-600' }}
 								onclick={() => quizzes.splice(idx, 1)}

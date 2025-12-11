@@ -1,6 +1,5 @@
 <script lang="ts">
 	import Button from '$lib/components/button.svelte';
-	import { useQuiz } from '$lib/contexts';
 	import Trash from '~icons/ph/trash';
 	import FilePlus from '~icons/ph/file-plus';
 	import X from '~icons/ph/x';
@@ -9,7 +8,7 @@
 	import Play from '~icons/ph/play';
 	import Stop from '~icons/ph/stop';
 	import { TextareaAutosize, watch } from 'runed';
-	import WaveSurfer from 'wavesurfer.js';
+	import type { Quiz } from '$lib/schemas/quiz';
 
 	const ANSWER_COLORS = [
 		'border-red-500', // bg-red-600
@@ -20,19 +19,18 @@
 		'border-pink-500', // bg-pink-600
 	];
 
-	type Props = { editing: number };
+	type Props = { editing: number; quiz?: Quiz };
 
-	let { editing }: Props = $props();
-	const quiz = useQuiz();
+	let { editing, quiz = $bindable() }: Props = $props();
 	let editing_text_el = $state<HTMLTextAreaElement>(null!);
 	let answers_media_element = $state<HTMLMediaElement[]>([]);
 	let answers_media_playing = $state<boolean[]>([]);
 
-	if ('text' in (quiz.value?.questions[editing] || {})) {
+	if ('text' in (quiz?.questions[editing] || {})) {
 		new TextareaAutosize({
 			element: () => editing_text_el,
 			input: () => {
-				const question = quiz.value?.questions[editing];
+				const question = quiz?.questions[editing];
 				if (!question || !('text' in question)) return '';
 				return question.text;
 			},
@@ -59,8 +57,8 @@
 		editing < 0 ? 'pointer-events-none opacity-0' : '',
 	]}
 >
-	{#if quiz.value?.questions[editing]}
-		{@const question = quiz.value.questions[editing]}
+	{#if quiz?.questions[editing]}
+		{@const question = quiz.questions[editing]}
 
 		<div
 			class="bg-white border border-zinc-200 aspect-video p-4 w-full max-w-7xl rounded-xl flex flex-col gap-4"

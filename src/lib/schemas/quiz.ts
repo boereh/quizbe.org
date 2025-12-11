@@ -19,6 +19,7 @@ import Columns from '~icons/ph/columns';
 import Video from '~icons/ph/video';
 import SubtractSquare from '~icons/ph/subtract-square';
 import MathOperations from '~icons/ph/math-operations';
+import { useQuizStorage } from '$lib/storage';
 
 export type QuestionsRecord = {
 	[K in Question['type']]: Extract<Question, { type: K }>;
