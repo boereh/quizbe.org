@@ -22,7 +22,6 @@
 	import Editor from './editor.svelte';
 	import NoQuestions from './no-questions.svelte';
 	import { goto } from '$app/navigation';
-	import { resolve } from '$app/paths';
 	import SelectSingle from '$lib/components/select-single.svelte';
 	import { onMount, tick } from 'svelte';
 	import { loadDeviceQuiz, saveQuiz } from '$lib/storage';
@@ -85,6 +84,7 @@
 		/>
 	{:else}
 		{@const question = quiz?.questions[editing]}
+
 		{#if question}
 			<Button size="sm" icon={ArrowElbowDownLeft} onclick={() => (editing = -1)} />
 
@@ -238,7 +238,7 @@
 <Editor bind:quiz {editing} />
 
 {#if quiz && quiz.questions.length < 1}
-	<NoQuestions bind:editing />
+	<NoQuestions bind:editing bind:quiz />
 {/if}
 
 <Dialog.Root bind:open={open_settings}>

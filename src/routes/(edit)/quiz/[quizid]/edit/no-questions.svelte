@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { useQuiz } from '$lib/contexts';
 	import {
 		ICONS_OF_QUESTION_TYPES,
 		BLANK_QUESTIONS,
 		TYPE_OF_QUESTIONS,
 		type Question,
+		type Quiz,
 	} from '$lib/schemas/quiz';
 
 	type Category = {
@@ -13,8 +13,7 @@
 		types: Question['type'][];
 	};
 
-	let { editing = $bindable(-1) }: { editing: number } = $props();
-	const quiz = useQuiz();
+	let { editing = $bindable(-1), quiz = $bindable() }: { editing: number; quiz: Quiz } = $props();
 
 	const CATEGORIES: Category[] = [
 		{
@@ -43,8 +42,8 @@
 					<button
 						class="flex items-center p-2 gap-2 hover:(bg-zinc-100) rounded-md group transition font-medium cursor-pointer select-none"
 						onclick={() => {
-							if (!quiz.value) return;
-							quiz.value.questions.push(BLANK_QUESTIONS[question]);
+							if (!quiz) return;
+							quiz.questions.push(BLANK_QUESTIONS[question]);
 							editing = 0;
 						}}
 					>

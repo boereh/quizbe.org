@@ -9,6 +9,7 @@
 	import Stop from '~icons/ph/stop';
 	import { TextareaAutosize, watch } from 'runed';
 	import type { Quiz } from '$lib/schemas/quiz';
+	import { onMount } from 'svelte';
 
 	const ANSWER_COLORS = [
 		'border-red-500', // bg-red-600
@@ -26,16 +27,18 @@
 	let answers_media_element = $state<HTMLMediaElement[]>([]);
 	let answers_media_playing = $state<boolean[]>([]);
 
-	if ('text' in (quiz?.questions[editing] || {})) {
-		new TextareaAutosize({
-			element: () => editing_text_el,
-			input: () => {
-				const question = quiz?.questions[editing];
-				if (!question || !('text' in question)) return '';
-				return question.text;
-			},
-		});
-	}
+	onMount(() => {
+		if ('text' in (quiz?.questions[editing] || {})) {
+			new TextareaAutosize({
+				element: () => editing_text_el,
+				input: () => {
+					const question = quiz?.questions[editing];
+					if (!question || !('text' in question)) return '';
+					return question.text;
+				},
+			});
+		}
+	});
 
 	watch(
 		() => editing,

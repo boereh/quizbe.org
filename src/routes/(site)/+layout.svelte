@@ -5,3 +5,5 @@
 
 	<span class="flex-1"></span>
 </div>
+
+<slot />

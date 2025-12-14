@@ -1,5 +1,6 @@
 <script lang="ts">
 	import 'virtual:uno.css';
+	import { Tooltip } from 'bits-ui';
 
 	let { children } = $props();
 </script>
@@ -8,4 +9,6 @@
 	<title>Quizbe - Interactive learning in one space</title>
 </svelte:head>
 
-{@render children?.()}
+<Tooltip.Provider>
+	{@render children?.()}
+</Tooltip.Provider>
