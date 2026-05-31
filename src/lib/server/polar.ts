@@ -4,7 +4,7 @@ import { POLAR_TOKEN, POLAR_SERVER, QUIZBE_PLUS_ID } from '$env/static/private';
 
 export const polar_client = new Polar({
 	accessToken: POLAR_TOKEN,
-	server: POLAR_SERVER === 'sandbox' ? 'sandbox' : 'production',
+	server: POLAR_SERVER === 'production' ? 'production' : 'sandbox',
 });
 
 export const polar_plugin = polar({
